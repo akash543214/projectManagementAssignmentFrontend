@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { verifyUserlogin } from '../BackendApi/authApi';
@@ -8,7 +8,8 @@ import LoadingCircle from '../assets/LoadingCircle';
 
 function App() {
   
-  
+    const navigate = useNavigate();
+
   useEffect(() => {
   document.documentElement.classList.add("dark");
 }, []);
@@ -22,7 +23,10 @@ function App() {
         dispatch(login(res.data));
       }
     } catch (err) {
+
       console.log(err);
+     navigate("/login")
+
     } finally {
       setLoading(false);
     }

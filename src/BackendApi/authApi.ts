@@ -30,7 +30,6 @@ export const createUser = async (User: { name: string; email: string; password: 
 
 export const loginUser = async(User: { email: string;
    password: string; })=>{
-
  try {
     const response = await axiosInstance.post('/login-user', User);
     return response.data; 

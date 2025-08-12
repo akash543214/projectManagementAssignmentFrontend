@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
 import { loginUser } from "@/BackendApi/authApi"
 import { login } from "@/store/authSlice";
+import { useNavigate } from "react-router";
 
 type LoginFormData = {
   email: string;
@@ -25,6 +26,7 @@ type LoginFormData = {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+        const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -46,13 +48,20 @@ type LoginFormData = {
 
     try {
       const response = await loginUser(data);
-      if (!response.success) setError(response.error || "");
-      else dispatch(login(response.data.user));
+      console.log(response);
+      if (!response.login)
+       {  setError(response.error || "");
+
+        return;
+       }
+      else dispatch(login(response.user));
 
       reset({
         email: "",
         password: "",
       });
+        console.log("navigating")
+      //navigate("/home");
     } catch (error) {
       console.error("Error logging in user:", error);
       setServerError(
