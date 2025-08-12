@@ -1,7 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 import axios from 'axios';
-import { ProjectData } from '@/types/common';
-
+import { TaskData } from '@/types/common';
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -10,11 +9,10 @@ const axiosInstance = axios.create({
   withCredentials: true, 
 });
 
-
-export const addProject = async (project:{title:string,description:string}) => {
+export const addTask = async (projectId:string,task:any) => {
 
  try {
-    const response = await axiosInstance.post('/create-project',project);
+    const response = await axiosInstance.post(`/create-task/${projectId}`,task);
     return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -22,62 +20,62 @@ export const addProject = async (project:{title:string,description:string}) => {
       console.error("Error adding task:", errorMessage);
       throw new Error(errorMessage);
     }
-    console.error("Error adding project:", error);
+    console.error("Error adding task:", error);
     throw error;
   }
     
 };
 
 
-export const getProjects = async () => {
+
+export const getTasks = async (projectId:string) => {
 
  try {
-    const response = await axiosInstance.get('/projects');
+    const response = await axiosInstance.get(`/tasks/${projectId}`);
     return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorMessage = error.response?.data?.message || `HTTP error! Status: ${error.response?.status}`;
-      console.error("Error getting projects:", errorMessage);
+      console.error("Error adding task:", errorMessage);
       throw new Error(errorMessage);
     }
-    console.error("Error getting projects:", error);
+    console.error("Error adding task:", error);
     throw error;
   }
     
 };
 
 
-export const updateProjects = async (projectId:string,
-  project:ProjectData) => {
+export const updateTask = async (taskId:string,task:TaskData) => {
 
  try {
-    const response = await axiosInstance.patch(`/update-project/${projectId}`,project);
+    const response = await axiosInstance.patch(`/update-task/${taskId}`,task);
     return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorMessage = error.response?.data?.message || `HTTP error! Status: ${error.response?.status}`;
-      console.error("Error updating project:", errorMessage);
+      console.error("Error adding task:", errorMessage);
       throw new Error(errorMessage);
     }
-    console.error("Error updating project", error);
+    console.error("Error adding task:", error);
     throw error;
   }
     
 };
 
 
-export const deleteProject = async (projectId:string) => {
+export const deleteTask = async (taskId:string) => {
 
  try {
-    const response = await axiosInstance.delete(`/delete-project/${projectId}`);
+    const response = await axiosInstance.delete(`/delete-task/${taskId}`);
     return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorMessage = error.response?.data?.message || `HTTP error! Status: ${error.response?.status}`;
-      console.error("Error deleting project", errorMessage);
+      console.error("Error adding task:", errorMessage);
       throw new Error(errorMessage);
     }
-    console.error("Error deleting project", error);
+    console.error("Error adding task:", error);
     throw error;
   }
     

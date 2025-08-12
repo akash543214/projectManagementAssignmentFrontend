@@ -1,5 +1,7 @@
-import  { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ProjectData } from "@/types/common";
+import LogOut from "@/components/Logout";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,55 +10,74 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { getProjects, addProject, updateProjects,deleteProject } from "@/BackendApi/projectApi";
 
-type Project = {
-  id: number;
-  title: string;
-  description: string;
-};
-
-const initialProjects: Project[] = [
-  { id: 1, title: "AI SaaS Platform", description: "AI-powered project management tool" },
-  { id: 2, title: "E-commerce Store", description: "Fullstack online store with payments" },
-];
 
 export default function HomePage() {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editProjectData, setEditProjectData] = useState<ProjectData | null>(null);
   const [newProject, setNewProject] = useState({ title: "", description: "" });
 
-  const handleEdit = (id: number) => {
-    setEditingId(id);
+  const handleEdit = (id: string) => {
+    const selectedProject = projects.find((p) => p._id === id);
+    if (selectedProject) {
+      setEditingId(id);
+      setEditProjectData({ ...selectedProject });
+    }
   };
 
-  const handleSave = (id: number) => {
-    setEditingId(null);
+  const handleSave = async (id: string) => {
+    if (!editProjectData) return;
+    try {
+      await updateProjects(id, editProjectData);
+      setEditingId(null);
+      setEditProjectData(null);
+      fetchProjects();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    setProjects(projects.filter((p) => p.id !== id));
+  const handleDelete = (id: string) => {
+    try{
+            deleteProject(id);
+    }catch(err)
+    {
+        console.error(err);
+    }
   };
 
-  const handleAddProject = () => {
-    if (!newProject.title.trim()) return;
-    setProjects([
-      ...projects,
-      { id: Date.now(), title: newProject.title, description: newProject.description },
-    ]);
-    setNewProject({ title: "", description: "" });
+  const handleAddProject = async () => {
+    try {
+      await addProject(newProject);
+      setNewProject({ title: "", description: "" });
+      fetchProjects();
+
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  const fetchProjects = async () => {
+    try {
+      const res = await getProjects();
+      setProjects(res);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, [handleDelete]);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold">Projects</h1>
-        <Button
-          variant="outline"
-          className="border-gray-700 text-white hover:bg-gray-800"
-        >
-          Logout
-        </Button>
+      <LogOut />
       </div>
 
       {/* Add Project */}
@@ -90,16 +111,14 @@ export default function HomePage() {
           </thead>
           <tbody>
             {projects.map((project) => (
-              <tr key={project.id} className="border-b border-gray-800 hover:bg-gray-900">
+              <tr key={project._id} className="border-b border-gray-800 hover:bg-gray-900">
                 <td className="px-4 py-3">
-                  {editingId === project.id ? (
+                  {editingId === project._id ? (
                     <Input
-                      value={project.title}
+                      value={editProjectData?.title || ""}
                       onChange={(e) =>
-                        setProjects((prev) =>
-                          prev.map((p) =>
-                            p.id === project.id ? { ...p, title: e.target.value } : p
-                          )
+                        setEditProjectData((prev) =>
+                          prev ? { ...prev, title: e.target.value } : prev
                         )
                       }
                       className="bg-gray-800 border-gray-700 text-white"
@@ -109,14 +128,12 @@ export default function HomePage() {
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  {editingId === project.id ? (
+                  {editingId === project._id ? (
                     <Input
-                      value={project.description}
+                      value={editProjectData?.description || ""}
                       onChange={(e) =>
-                        setProjects((prev) =>
-                          prev.map((p) =>
-                            p.id === project.id ? { ...p, description: e.target.value } : p
-                          )
+                        setEditProjectData((prev) =>
+                          prev ? { ...prev, description: e.target.value } : prev
                         )
                       }
                       className="bg-gray-800 border-gray-700 text-white"
@@ -126,11 +143,11 @@ export default function HomePage() {
                   )}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  {editingId === project.id ? (
+                  {editingId === project._id ? (
                     <Button
                       size="sm"
                       className="bg-green-600 hover:bg-green-700"
-                      onClick={() => handleSave(project.id)}
+                      onClick={() => handleSave(project._id)}
                     >
                       Save
                     </Button>
@@ -146,13 +163,13 @@ export default function HomePage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-gray-900 border-gray-700">
                         <DropdownMenuItem
-                          onClick={() => handleEdit(project.id)}
+                          onClick={() => handleEdit(project._id)}
                           className="text-white hover:bg-gray-800"
                         >
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDelete(project.id)}
+                          onClick={() => handleDelete(project._id)}
                           className="text-red-500 hover:bg-gray-800"
                         >
                           Delete

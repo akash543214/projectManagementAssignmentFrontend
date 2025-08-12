@@ -9,7 +9,7 @@ import TaskPage from './pages/TaskPage.tsx';
 import AuthLayout from './components/AuthLayout.tsx';
 import App from './components/App'
 import Login from './pages/Login.tsx';
-
+import Signup from './pages/SignIn.tsx';
 const router = createBrowserRouter(
 [
   {
@@ -22,6 +22,14 @@ const router = createBrowserRouter(
             element: (
                  <AuthLayout authentication={false}>
                     <Login />
+                </AuthLayout>
+            ),
+        },  
+          {
+            path: "/signin",
+            element: (
+                 <AuthLayout authentication={false}>
+                    <Signup />
                 </AuthLayout>
             ),
         },  
