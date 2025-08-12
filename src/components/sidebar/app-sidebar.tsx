@@ -19,6 +19,7 @@ import { getProjects } from "@/BackendApi/projectApi";
 
 import { AlertCircle, Folder, FolderOpen } from "lucide-react";
 import { useEffect, useState } from "react";
+import SideBarItems from "./SideBarItems";
 
 
 
@@ -51,6 +52,8 @@ const fetchProjects = async()=>{
           <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
             Application
           </SidebarGroupLabel>
+                    <SideBarItems />
+
         </SidebarGroup>
         
         <SidebarGroup className="mt-6">
