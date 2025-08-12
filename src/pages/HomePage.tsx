@@ -19,6 +19,10 @@ export default function HomePage() {
   const [editProjectData, setEditProjectData] = useState<ProjectData | null>(null);
   const [newProject, setNewProject] = useState({ title: "", description: "" });
 
+    useEffect(() => {
+    fetchProjects();
+  }, []);
+
   const handleEdit = (id: string) => {
     const selectedProject = projects.find((p) => p._id === id);
     if (selectedProject) {
@@ -39,9 +43,10 @@ export default function HomePage() {
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async(id: string) => {
     try{
-            deleteProject(id);
+          await  deleteProject(id);
+          fetchProjects()
     }catch(err)
     {
         console.error(err);
@@ -53,6 +58,7 @@ export default function HomePage() {
       await addProject(newProject);
       setNewProject({ title: "", description: "" });
       fetchProjects();
+      window.location.reload();
 
     } catch (err) {
       console.error(err);
@@ -68,9 +74,6 @@ export default function HomePage() {
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, [handleDelete]);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6">

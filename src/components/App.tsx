@@ -22,6 +22,7 @@ function App() {
       if (res?.success === true) {
         dispatch(login(res.data));
       }
+      navigate('/home');
     } catch (err) {
 
       console.log(err);
